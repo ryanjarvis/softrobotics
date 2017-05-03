@@ -1,0 +1,17 @@
+{
+  "name": "softrobotics_code_sample",
+  "version": "1.0.0",
+  "description": "softrobotics code sample",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Ryan Jarvis",
+  "license": "ISC",
+  "dependencies": {
+    "koa": "^2.2.0",
+    "koa-route": "^3.2.0",
+    "koa-static": "^3.0.0",
+    "koa-websocket": "^3.0.1"
+  }
+}
