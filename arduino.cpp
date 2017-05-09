@@ -2,6 +2,7 @@
 
 #include <chrono>
 #include <thread>
+#include <iostream>
 
 #include <boost/asio.hpp>
 #include <boost/asio/serial_port.hpp>
@@ -12,11 +13,44 @@ namespace arduino {
 	boost::asio::serial_port port(io);
 
 	void open(const v8::FunctionCallbackInfo<v8::Value>& args) {
+		v8::Isolate* isolate = args.GetIsolate();
+		
+		if(args.Length() < 2) {
+			isolate->ThrowException(
+					v8::Exception::TypeError(
+						v8::String::NewFromUtf8(isolate, "Number of arguments should be 2")
+						)
+					);
+			return;
+		}
+
+		if(!args[0]->IsString()) {
+			isolate->ThrowException(
+					v8::Exception::TypeError(
+						v8::String::NewFromUtf8(isolate, "First argument should be a string")
+						)
+					);
+			return;
+		}
+		if(!args[1]->IsInt32()) {
+			isolate->ThrowException(
+					v8::Exception::TypeError(
+						v8::String::NewFromUtf8(isolate, "Second argument should be an integer")
+						)
+					);
+			return;
+		}
+
+		v8::String::Utf8Value strarg(args[0]);
+		std::string devicename(*strarg);
+		int baudrate = args[1]->NumberValue();
+
 		if(port.is_open()) {
 			port.close();
 		}
-		port.open("/dev/tty.usbmodem1421");
-		port.set_option(boost::asio::serial_port_base::baud_rate(9600));	
+
+		port.open(devicename);
+		port.set_option(boost::asio::serial_port_base::baud_rate(baudrate));	
 
 		//TODO: figure out how to determine
 		//when arduino serial communication
@@ -35,7 +69,6 @@ namespace arduino {
 				);
 		*/
 
-		v8::Isolate* isolate = args.GetIsolate();
 		args.GetReturnValue().Set(v8::Boolean::New(isolate, true));
 	};
 

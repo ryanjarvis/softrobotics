@@ -21,7 +21,10 @@ library.init = function(server, config) {
 		koa_route.all(
 			'/socket/',
 			async function(ctx, next) {
-				arduino.open();
+				arduino.open(
+					config.devicename,
+					config.baudrate
+				);
 				ctx.websocket.send("Arduino is ready");
 				ctx.websocket.on(
 					'message',

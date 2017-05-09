@@ -1,4 +1,6 @@
 {
 	"port": 9000,
-	"measure_request_time": false
+	"measure_request_time": false,
+	"devicename": "/dev/tty.usbmodem1421",
+	"baudrate": 9600
 }
