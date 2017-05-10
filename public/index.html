@@ -2,8 +2,19 @@
 	<head></head>
 	<body>
 		<div id="main">
-			<p>Websockets</p>
-			<button id="ccw">Counter-clockwise</button> <button id="cw">Clockwise</button>
+			<h1>Web-based Arduino Servo Control via Websockets</h1>
+			<p id="status">Establishing connection...</p>
+			<div>
+				<h2>Manual control</h2>
+				<button id="ccw">Counter-clockwise</button>
+				<button id="cw">Clockwise</button>
+				<label>Speed: <input id="speed" type="number" value="4"></input></label>
+			</div>
+			<div>
+				<h2>Direct setting</h2>
+				<button id="set">Set</button>
+				<label>Angle: <input id="angle" type="number" value="90"></input></label>
+			</div>
 		</div>
 		<script src="index.js"></script>
 	</body>

@@ -1,34 +1,78 @@
 #include <Servo.h>
 
-Servo myServo;
+Servo the_servo;
 int const servoPin = 9;
+
 int angle = 90;
-int speed = 4;
+
+char command_verb = 'a';
+char command_amount[4];
+int ca_index = 0;
+
+void reset_command() {
+  memset(command_amount, 0, sizeof(command_amount));
+  ca_index = 0;
+  command_verb = 'a';
+}
+
+void add_to_command(char input) {
+  if(isDigit(input)) {
+    command_amount[ca_index] = input;
+    ca_index++;
+  } else if (isAlpha(input)) {
+    command_verb = input;
+  }
+
+  if(ca_index >= sizeof(command_amount)) {
+    ca_index = sizeof(command_amount) - 1;
+  }
+}
+
+void run_command() {
+  if(command_amount[0] == '\0') {
+    reset_command();
+    return;
+  }
+  
+  int amount = atoi(command_amount);
+  
+  switch(command_verb) {
+    case 'a':
+      angle = amount;
+      break;
+    case 'r':
+      angle = angle + amount;
+      break;
+    case 'l':
+      angle = angle - amount;
+      break;
+  }
+  
+  constrain(angle, 0, 179);
+  the_servo.write(angle);
+  delay(15);
+
+  reset_command();
+}
 
 void setup() {
-  myServo.attach( servoPin );
-  myServo.write( angle );
+  the_servo.attach( servoPin );
+  the_servo.write( angle );
   delay(15);
-  
+
+  reset_command();
+
   Serial.begin(9600);
   Serial.println("a");
-  pinMode(LED_BUILTIN, OUTPUT);
 }
 
 void loop() {
   if(Serial.available()>0) {
-    char receivedChar = Serial.read();
-    if( receivedChar == 'r' ) {
-      angle = angle + speed;
-      angle = min(angle, 179);
-    } else if( receivedChar == 'l' ) {
-      angle = angle - speed;
-      angle = max(angle, 0);
+    char incoming = Serial.read();
+    if(incoming == '\n') {
+      run_command();
+    } else {
+      add_to_command(incoming);
     }
-  } else {
-    digitalWrite(LED_BUILTIN, LOW);
   }
-
-  myServo.write( angle );
-  delay(15);
 }
