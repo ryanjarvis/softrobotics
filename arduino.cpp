@@ -89,11 +89,38 @@ namespace arduino {
 					)
 				);
 	};
+
+	void testread(const v8::FunctionCallbackInfo<v8::Value>& args) {
+		v8::Isolate* isolate = args.GetIsolate();
+
+		port.open("/dev/tty.usbmodem1421");
+		port.set_option(boost::asio::serial_port_base::baud_rate(9600));	
+
+		//TODO: figure out how to determine
+		//when arduino serial communication
+		//is ready to be written
+		char ready[2] {0};
+		while(ready[0] != 'a') {
+			std::this_thread::sleep_for(
+					std::chrono::milliseconds(50)
+					);
+			boost::asio::read(
+					port,
+					boost::asio::buffer(
+						&ready,
+						1
+						)
+					);
+		}
+
+		args.GetReturnValue().Set(v8::String::NewFromUtf8(isolate, ready));
+	}
 	
 	void init(v8::Local<v8::Object> exports) {
 		NODE_SET_METHOD(exports, "open", open);
 		NODE_SET_METHOD(exports, "send", send);
 		NODE_SET_METHOD(exports, "close", close);
+		NODE_SET_METHOD(exports, "testread", testread);
 	}
 
 	NODE_MODULE(arduino,init)

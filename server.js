@@ -1,4 +1,5 @@
 const arduino = require('./build/Release/arduino');
+const imager = require('./build/Release/imager');
 
 const koa = require('koa');
 const koa_static = require('koa-static');
@@ -32,6 +33,17 @@ library.init = function(server, config) {
 						arduino.send(message);
 					}
 				)
+			}
+		)
+	);
+	server.use(
+		koa_route.get(
+			'/vision',
+			async function(ctx, next) {
+				angle = imager.get_orientation("public/" + ctx.request.query.img);
+				command = `a${angle}\n`;
+				arduino.send(command);
+				ctx.body = {success: true};
 			}
 		)
 	);

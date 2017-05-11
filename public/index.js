@@ -74,4 +74,20 @@
 		send_message(command)
 	}
 
+	//Controls for computer vision
+	const image = document.querySelector("#image");
+	const imageselect = document.querySelector("#imageselect");
+	imageselect.onchange = function() {
+		image.src = imageselect.value;
+	}
+	const orient = document.querySelector("#orient");
+	orient.onclick = function() {
+		request = new XMLHttpRequest();
+		request.open(
+			'GET',
+			`/vision?img=${imageselect.value}`
+		);
+		request.send();
+	}
+
 })();
